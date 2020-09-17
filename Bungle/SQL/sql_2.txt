@@ -1,0 +1,3 @@
+USERNAME=victim
+PASSWORD=!!!'tH7D
+username=victim&password=%21%21%21%27tH7D
