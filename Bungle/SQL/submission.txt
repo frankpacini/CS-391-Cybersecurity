@@ -1,0 +1,19 @@
+
+
+	1. Jeffrey Li, Kenneth Zhang, Shunying Chen
+
+	2. None
+
+	3. http://www.unixwiz.net/techtips/sql-injection.html
+	
+	https://en.wikipedia.org/wiki/MD5#MD5_hashes
+
+	https://www.php.net/manual/en/function.md5.php
+
+	http://www.zedwood.com/article/cpp-md5-function  		-- For c++ md5 implementation
+
+	https://cvk.posthaven.com/sql-injection-with-raw-md5-hashes	-- For optimized sql injection string 'or'1, did not use code
+
+
+
+

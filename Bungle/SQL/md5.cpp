@@ -345,7 +345,7 @@ std::string MD5::hexdigest() const
   return std::string(buf);
 }
 
-std::string MD5::rawdigest() const
+std::string MD5::rawdigest() const		// Added function here
 {
   if (!finalized)
     return "";
@@ -373,7 +373,7 @@ std::string md5(const std::string str)
     MD5 md5 = MD5(str);
  
     //return md5.hexdigest();
-	return md5.rawdigest();
+	return md5.rawdigest();			// called here
 }
 
 
