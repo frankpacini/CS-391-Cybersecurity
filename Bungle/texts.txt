@@ -1,5 +1,0 @@
-https://en.wikipedia.org/wiki/MD5#MD5_hashes
-
-https://www.php.net/manual/en/function.md5.php
-
-http://www.unixwiz.net/techtips/sql-injection.html
