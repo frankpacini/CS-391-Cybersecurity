@@ -1,0 +1,14 @@
+
+
+	1. Jeffrey Li, Kenneth Zhang, Shunying Chen
+
+
+	2. None
+
+
+	3. https://docs.python.org/3/library/hashlib.html
+
+
+	https://stackoverflow.com/questions/3121979/how-to-sort-a-list-tuple-of-lists-tuples-by-the-element-at-a-given-index
+
+
