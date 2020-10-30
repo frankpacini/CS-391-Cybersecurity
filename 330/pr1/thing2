@@ -1,0 +1,7 @@
+outbreak_starter.py(100, 5): +1
+outbreak_starter.py(102, 9): +2 (incl 1 for nesting)
+outbreak_starter.py(103, 13): +3 (incl 2 for nesting)
+outbreak_starter.py(105, 17): +4 (incl 3 for nesting)
+outbreak_starter.py(108, 5): +1
+outbreak_starter.py(109, 9): +2 (incl 1 for nesting)
+outbreak_starter.py(110, 13): +3 (incl 2 for nesting)
