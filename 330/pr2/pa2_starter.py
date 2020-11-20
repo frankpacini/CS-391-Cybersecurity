@@ -158,15 +158,14 @@ def kruskal(N, m, undirected_adj_list):
                 E.append([i,j,w])
                 edgeDict[(i,j)] = ""
     E = sorted(E, key = lambda x: x[2])
-    print(E)
     size = [1]*N
     head = [None]*N
-    mst_adj_list = [[]]*N
+    mst_adj_list = [[] for _ in range(N)]
     for e in E:
         u, v, w = e
         h_u = u
         h_v = v
-        while head[h_u] != None or head[h_v] != None :
+        while head[h_u] != None or head[h_v] != None:
             h_u = head[h_u] if head[h_u] else h_u
             h_v = head[h_v] if head[h_v] else h_v
         if h_u != h_v:
@@ -181,7 +180,8 @@ def kruskal(N, m, undirected_adj_list):
             if max(size[h_u], size[h_v]) == N:
                 break
     # Return the adjacency list for the MST, formatted as a list-of-lists in exactly the same way as undirected_adj_list
-    
+    for arr in mst_adj_list:
+        print(arr)
     return mst_adj_list
 
 
