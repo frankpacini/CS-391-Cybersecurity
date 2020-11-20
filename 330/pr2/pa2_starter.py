@@ -1,6 +1,5 @@
 
 import sys
-import os
 import heapq
 import math
 ############################
@@ -80,18 +79,6 @@ def Run(input_file, output_file):
 
 ############################
 
-def decrease_key(Q, i, key):
-    Q[i] = (key, Q[i][1])
-    while i > 0 and Q[parent(i)][0] > Q[i][0]:
-        temp = Q[i]
-        Q[i] = Q[parent(i)]
-        Q[parent(i)] = temp
-        i = parent(i)
-    return i
-
-def parent(i):
-    return math.floor(i/2)
-
 ############################
 
 # FINISH THESE METHODS
@@ -111,25 +98,24 @@ def dijkstra(N, m, s, adj_list):
     #               NOTE: If a node has no outgoing edges, it is represented by an empty list
     #
     # WRITE YOUR CODE HERE:
-    pi = [float('inf')]*15
+    pi = [float('inf')]*N
     distances = [float('inf')]*N
     pi[s] = 0.0
     parents = [None]*N
-    Q = [(pi[i], i) for i in range(N)]
+    S = {s: ""}             # Keep track of already fixed nodes to remove old heap entries
+    Q = [(pi[i], i) for i in range(N)]  
     heapq.heapify(Q)
-    heap_map = {}
-    for k in Q:
-        heap_map[k[1]] = k
-    offset = 0
     while len(Q):
-        u = heapq.heappop(Q)[1]
-        offset += 1
+        while Q[0] in S:
+            heapq.heappop(Q)   # Pop entries which have already been removed (which are the old ones)
+        u = heapq.heappop(Q)[1] 
         distances[u] = pi[u]
+        S[u] = ""
         for tup in adj_list[u]:
             (v, l_v) = tup
             if pi[v] > pi[u] + l_v:
                 pi[v] = pi[u] + l_v
-                heap_map[v] = (pi[v], decrease_key(Q, heap_map[v][1] - offset, pi[v]) + offset)
+                heapq.heappush(Q, (pi[v], v))   # Instead of decrease-key, just push entry with lower weight
                 parents[v] = u
 
     # Return two lists of size N, in which each index represents a node n:
@@ -154,38 +140,33 @@ def kruskal(N, m, undirected_adj_list):
     for i, adj in enumerate(undirected_adj_list):
         for tup in adj:
             (j, w) = tup
-            if not ((i,j) in edgeDict or (j,i) in edgeDict):
-                E.append([i,j,w])
+            if not ((i,j) in edgeDict or (j,i) in edgeDict):    # Use edge dict to exclude reverse direction of edge already added
+                E.append([i,j,w])       # Store edges as a list of the two endpoints and weight
                 edgeDict[(i,j)] = ""
-    E = sorted(E, key = lambda x: x[2])
+    E = sorted(E, key = lambda x: x[2])     # Sort the edges by weight, the 3rd index of the list    
     size = [1]*N
     head = [None]*N
     mst_adj_list = [[] for _ in range(N)]
     for e in E:
         u, v, w = e
-        h_u = u
-        h_v = v
+        h_u = u        # Interim "pointers" while finding head of u and v components
+        h_v = v        # eventually will equal head[u] and head[v], respectively
         while head[h_u] != None or head[h_v] != None:
             h_u = head[h_u] if head[h_u] else h_u
             h_v = head[h_v] if head[h_v] else h_v
-        if h_u != h_v:
+        if h_u != h_v:      # If u and v are in different components
             mst_adj_list[u].append((v, w))
             mst_adj_list[v].append((u, w))
-            if size[h_u] > size[h_v]:
+            if size[h_u] > size[h_v]:     # Add the smaller of the two components to the other
                 size[h_u] += size[h_v]
                 head[h_v] = h_u
             else:
                 size[h_v] += size[h_u]
                 head[h_u] = h_v
-            if max(size[h_u], size[h_v]) == N:
+            if max(size[h_u], size[h_v]) == N:  # If the combined component has N nodes, we're done
                 break
     # Return the adjacency list for the MST, formatted as a list-of-lists in exactly the same way as undirected_adj_list
-    for arr in mst_adj_list:
-        print(arr)
     return mst_adj_list
-
-
-
 
 #############################
 # CHANGE INPUT FILES FOR PART 2 HERE
