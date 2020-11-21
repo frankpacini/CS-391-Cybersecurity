@@ -1,6 +1,7 @@
 
 import sys
 import heapq
+from queue import Queue
 import math
 ############################
 
@@ -70,6 +71,8 @@ def Run(input_file, output_file):
     distances, parents =   dijkstra(N, m, s, adj_list)
     undirected_adj_list = make_undirected_graph(N, adj_list)
     mst = kruskal(N, m, undirected_adj_list)
+    print(compareTrees(N, s, adj_list, distances, parents, mst))
+    findBetterTree(N, s, adj_list, distances, parents, mst)
     writeOutput(output_file, N, s, distances, parents, mst)
 
 
@@ -168,6 +171,50 @@ def kruskal(N, m, undirected_adj_list):
     # Return the adjacency list for the MST, formatted as a list-of-lists in exactly the same way as undirected_adj_list
     return mst_adj_list
 
+def compareTrees(N, s, adj_list, sp_dist, sp_parents, mst):
+    C_sp = 0.0
+    for child, parent in enumerate(sp_parents):
+        if parent != None:
+            weight = 0
+            for e in adj_list[parent]:
+                if e[0] == child:
+                    weight = e[1]
+                    break
+            C_sp += weight
+    
+    C_mst = 0.0
+
+    discovered = [False]*N
+    discovered[s] = True
+    q = Queue(maxsize=N+1)
+    q.put(s)
+    mst_dist = [0.0]*N
+    while not q.empty():
+        node = q.get()
+        for tup in mst[node]:
+            neighbor, weight = tup
+            if discovered[neighbor] == False:
+                discovered[neighbor] = True
+                q.put(neighbor)
+                C_mst += weight
+                mst_dist[neighbor] = mst_dist[node] + weight
+
+    TWR = C_sp / C_mst
+    MDR = max([0 if sp_dist[i] == 0 else mst_dist[i]/sp_dist[i] for i in range(N)])
+    
+    return TWR, MDR
+
+    
+def findBetterTree(N, s, adj_list, sp_dist, sp_parents, mst):
+    b_tree = [[j for j in arr if j[0] != sp_parents[i] and sp_parents[j[0]] != i] for i, arr in enumerate(mst)]
+    len_b = 0
+    for arr in b_tree:
+        len_b += len(arr)
+    len_mst = 0
+    for arr in mst:
+        len_mst += len(arr)
+    print(len_b, len_mst)
+
 #############################
 # CHANGE INPUT FILES FOR PART 2 HERE
 
@@ -184,9 +231,9 @@ def main(args=[]):
     # and uncomment the Run commend for the graph from part 2
     # that you wish to work on:
     
-    #Run('g_randomEdges.txt', 'output')
-    #Run('g_donutEdges.txt', 'output')
-    #Run('g_zigzagEdges.txt', 'output')
-
+    Run('g_randomEdges.txt', 'output')
+    Run('g_donutEdges.txt', 'output')
+    Run('g_zigzagEdges.txt', 'output')
+ 
 if __name__ == "__main__":
     main(sys.argv[1:])    
