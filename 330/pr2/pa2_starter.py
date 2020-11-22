@@ -3,6 +3,8 @@ import sys
 import heapq
 from queue import Queue
 import math
+import matplotlib.pyplot as plt
+import numpy as np
 ############################
 
 # DO NOT CHANGE THIS PART!!
@@ -71,9 +73,9 @@ def Run(input_file, output_file):
     distances, parents =   dijkstra(N, m, s, adj_list)
     undirected_adj_list = make_undirected_graph(N, adj_list)
     mst = kruskal(N, m, undirected_adj_list)
-    print(compareTrees(N, s, adj_list, distances, parents, mst))
     findBetterTree(N, s, adj_list, distances, parents, mst)
     writeOutput(output_file, N, s, distances, parents, mst)
+    return compareTrees(N, s, adj_list, distances, parents, mst)
 
 
 ############################
@@ -200,9 +202,13 @@ def compareTrees(N, s, adj_list, sp_dist, sp_parents, mst):
                 mst_dist[neighbor] = mst_dist[node] + weight
 
     TWR = C_sp / C_mst
-    MDR = max([0 if sp_dist[i] == 0 else mst_dist[i]/sp_dist[i] for i in range(N)])
+    dist_ratios = [0 if sp_dist[i] == 0 else mst_dist[i]/sp_dist[i] for i in range(N)]
+    dist_ratios.sort()
+    MDR = dist_ratios[-1]
+    ADR = sum(dist_ratios) / sum([0 if sp_dist[i] == 0 else 1 for i in range(N)])
+    dist_ratios[-math.floor(N/100.0):]
     
-    return TWR, MDR
+    return TWR, MDR, ADR
 
     
 def findBetterTree(N, s, adj_list, sp_dist, sp_parents, mst):
@@ -213,7 +219,7 @@ def findBetterTree(N, s, adj_list, sp_dist, sp_parents, mst):
     len_mst = 0
     for arr in mst:
         len_mst += len(arr)
-    print(len_b, len_mst)
+    #print(len_b, len_mst)
 
 #############################
 # CHANGE INPUT FILES FOR PART 2 HERE
@@ -231,9 +237,16 @@ def main(args=[]):
     # and uncomment the Run commend for the graph from part 2
     # that you wish to work on:
     
-    Run('g_randomEdges.txt', 'output')
-    Run('g_donutEdges.txt', 'output')
-    Run('g_zigzagEdges.txt', 'output')
+    fig, ax = plt.subplots()
+    map = [('g_randomEdges.txt', "Random"), ('g_donutEdges.txt', "Donut"), ('g_zigzagEdges.txt', "Zigzag")]
+    for m in map:
+        x, y = Run(m[0], 'output')
+        ax.scatter(x, y, label=m[1])
+    ax.set_xlabel("Total Weight Ratio")
+    ax.set_ylabel("Maximum Distance Ratio")
+    ax.legend()
+    ax.set_title("Scatter Plot of Total Weight and Max Distance Ratios")
+    plt.show()
  
 if __name__ == "__main__":
     main(sys.argv[1:])    
