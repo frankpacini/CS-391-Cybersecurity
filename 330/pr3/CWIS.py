@@ -58,39 +58,38 @@ def Run(input_file, output_file):
 ############################
 
 def find_solution(N, k, intervals):
-    # You are given the following variables:
-    # N - the total number of intervals
-    # k - the max number of intervals you can put on your schedule
-    # intervals - a list of lists
-    # ---> Each sublist in intervals has 4 items representing one interval:
-    # ---> 0) an INT that is the NAME of the interval
-    # ---> 1) a float that is the start time of the interval
-    # ---> 2) a float that is the end time of the interval
-    # ---> 3) a float that is the weight of an interval
 
-    intervals.sort(key = lambda x: x[2])
-    intervals_by_start = sorted(intervals, key=lambda x: x[1])
+    intervals.sort(key = lambda x: x[2])        # Sort intervals by finish time
+    intervals_by_start = sorted(intervals, key=lambda x: x[1])  # Create a copy sorted by start time
     p = []
     i = N - 1
     j = N - 1
-    while(i >= 0):
-        while(j >= 0 and intervals[j][2] > intervals_by_start[i][1]):
+    while(i >= 0):                              # Iterate through the start array from N - 1 to 0
+        while(j >= 0 and intervals[j][2] > intervals_by_start[i][1]): # Decrement down to the highest finish time interval which is compatible with interval i. Any interval in the finish array not compatible with i can't be compatible with those in 0 to i-1 of the start array.
             j -= 1
+        prev = 0        # If all intervals have been considered, there is no earlier compatible job, so assign to 0 (which means none)
         if j >= 0:
-            p.append((intervals_by_start[i][2], j+1))
-        else:
-            p.append((intervals_by_start[i][2], 0))
+            prev = j+1      # Shift from 0-indexed to 1-indexed
+        p.append((intervals_by_start[i][2], prev))      # Append p-value with finish time so that the list can be sorted to correct indexes in the following list comprehension
         i -= 1
+
     p = [tup[1] for tup in sorted(p, key=lambda x: x[0])]
-    m = [[0 for _ in range(k+1)]] + [[0] + [None]*k for _ in range(N)]
+
+    m = [[None]*(k+1) for _ in range(N+1)]
     b = [[None]*(k+1) for _ in range(N+1)]
+
+    for i in range(N+1):        # Base cases
+        m[i][0] = 0
+    for j in range(k+1):
+        m[0][j] = 0
+
     for i in range(1, N+1):
         for j in range(1, k+1):
             x = m[i-1][j]
-            y = intervals[i-1][3]
+            y = intervals[i-1][3]   # i - 1 for intervals and p since i is 1-indexed
             if p[i-1] != None:
                 y += m[p[i-1]][j-1]
-            if x > y:
+            if x > y:       # Take the larger of the two subproblems, as in homework 10
                 m[i][j] = x
                 b[i][j] = (i - 1, j)
             else:
@@ -98,18 +97,14 @@ def find_solution(N, k, intervals):
                 b[i][j] = (p[i-1], j - 1)
 
     schedule = []
-    ptr = b[N][k]
+    ptr = b[N][k]   # Backtrace using b to determine schedule
     i = N
     j = k
-    while ptr != None:
-        if ptr[1] < j:
+    while ptr != None:  
+        if ptr[1] < j:      # If the chosen subproblem has smaller max num of intervals, then current interval is in optimal solution
             schedule.append(intervals[i-1][0])
         i, j = ptr
         ptr = b[i][j]
-    # return a list called schedule
-    # each element in schedule should be 
-    # an INT representing the NAME of an interval
-    # you would like to place on your schedule
     
     return schedule
 
