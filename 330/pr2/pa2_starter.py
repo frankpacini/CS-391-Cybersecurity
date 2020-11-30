@@ -202,12 +202,12 @@ def compareTrees(N, s, adj_list, sp_dist, sp_parents, mst):
                 mst_dist[neighbor] = mst_dist[node] + weight
 
     TWR = C_sp / C_mst
-    dist_ratios = [0 if sp_dist[i] == 0 else mst_dist[i]/sp_dist[i] for i in range(N)]
+    # Create a list of all ratios (besides those where u = s or d_sp[u] = 0), and then sort to easily obtain MDR and other quantities
+    dist_ratios = [0 if sp_dist[u] == 0 or u == s else mst_dist[u]/sp_dist[u] for u in range(N)]
     dist_ratios.sort()
     MDR = dist_ratios[-1]
     ADR = sum(dist_ratios) / sum([0 if sp_dist[i] == 0 else 1 for i in range(N)])
-    dist_ratios[-math.floor(N/100.0):]
-    
+    print(dist_ratios[-math.floor(N/100.0):]) # Look at largest 1% of nodes to see dropoff from the MDR
     return TWR, MDR, ADR
 
     
