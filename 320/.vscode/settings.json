@@ -1,0 +1,15 @@
+{
+    "editor.formatOnType": true,
+    "terminal.integrated.env.linux": {
+        "PATH": "/home/fgpacini/.local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/home/fgpacini/.opam/4.09.0/bin"
+    },
+    "files.associations": {
+        "*.ml": "ocaml",
+        "*.mli": "ocaml"
+    },
+    "explorer.confirmDelete": false,
+    "editor.formatOnSave": true,
+    "ocaml.lintOnSave": true,
+    "ocaml.useOpamToResolve": true,
+    "window.zoomLevel": 1
+}
