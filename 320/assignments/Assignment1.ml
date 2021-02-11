@@ -97,6 +97,7 @@ let zip_int (a: int list) (b: int list): (int * int) list =
     else aux (tl x) (tl y) (((hd x),(hd y))::accum)
   in rev(aux a b []);;
 
+
 (*
 TODO: Write a dotProduct function for lists of integers,
 If the two list are of unequal lengths then return 0
@@ -112,6 +113,26 @@ let rec dotProduct (x: int list) (y: int list): int =
          if (length x) = 0 then accum
          else aux (tl x) (tl y) ((hd x) * (hd y) + accum)
     in aux x y 0;;
+
+let rec dotProduct0 (x: int list) (y: int list): int=
+  let rec aux accum x y =
+    match x, y with
+    | [], _ -> accum
+    | _, [] -> accum
+    | headx::tailx, heady::taily -> 
+      if length(tailx) != length(taily) then 0
+      else aux (accum + headx * heady) tailx taily
+  in aux 0 x y;;
+
+let rec dotProduct1 (x: int list) (y: int list): int =
+   let rec aux accum x y = 
+      match x, y with 
+      | [], _ -> accum
+      | _, [] -> accum
+      | headx::tailx, heady::taily -> 
+        if length(tailx) != length(taily) then 0
+        else (headx*heady) + (aux accum tailx taily)
+   in aux 0 x y;;
 
 (* 
 TODO:
