@@ -51,6 +51,10 @@ DECLARE_WAIT_QUEUE_HEAD (my_queue);
 
 static char my_char;
 
+static int is_shifted = 0;
+
+static int is_caps_locked = 0;
+
 static inline unsigned char inb( unsigned short usPort ) {
 
     unsigned char uch;
@@ -64,20 +68,42 @@ static inline void outb( unsigned char uch, unsigned short usPort ) {
     asm volatile( "outb %0,%1" : : "a" (uch), "Nd" (usPort) );
 }
 
-irqreturn_t my_getchar (int irq, void *dev_id, struct pt_regs *regs) {
+irqreturn_t my_getchar (int irq, void *dev_id) {
 
   char c;
 
-  static char scancode[128] = "\0\e1234567890-=\177\tqwertyuiop[]\n\0asdfghjkl;'`\0\\zxcvbnm,./\0*\0 \0\0\0\0\0\0\0\0\0\0\0\0\000789-456+1230.\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+  static char *scancode;
+  
+  if(is_shifted || is_caps_locked) {
+    scancode = "\0\e!@#$%^&*()_+\177\tQWERTYUIOP{}\n\0ASDFGHJKL:\"~l|ZXCVBNM<>?r*\0 \0\0\0\0\0\0\0\0\0\0\0\0\000789-456+1230.\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+  } else {
+    scancode = "\0\e1234567890-=\177\tqwertyuiop[]\n\0asdfghjkl;'`L\\zxcvbnm,./R*\0 \0\0\0\0\0\0\0\0\0\0\0\0\000789-456+1230.\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0";
+  }
 
   /* Poll keyboard status register at port 0x64 checking bit 0 to see if
    * output buffer is full. We continue to poll if the msb of port 0x60
    * (data port) is set, as this indicates out-of-band data or a release
    * keystroke
    */
-  printk("3\n");
-  if((inb( 0x64 ) & 0x1) && !(( c = inb( 0x60 ) ) & 0x80)) {
+  c = inb( 0x60 );
+  
+  printk("<1> Interrupt");
+  printk("<1> Data Port: %d, %c", c, scancode[(int) c]);
+
+  my_char = '\0';
+
+  if((int) c == 42 || (int) c == 54) { // left or right shift pressed
+    is_shifted = 1; 
+    printk("<1> Shift on");
+  } else if((int) c == -86 || (int) c == -74) { // left or right shift released
+    is_shifted = 0; 
+    printk("<1> Shift off");
+  } else if((int) c == 58) { // Caps lock pressed
+    is_caps_locked = ~is_caps_locked;
+  } else if(//(inb( 0x64 ) & 0x1) && 
+      !(c & 0x80)) {
     my_char = scancode[ (int)c ];
+    printk("<1> %c", my_char);
   }
 
   wake_up_interruptible((wait_queue_head_t *) &my_queue);
@@ -97,15 +123,15 @@ static int __init initialization_routine(void) {
     return 1;
   }
 
-  //proc_entry->owner = THIS_MODULE; <-- This is now deprecated
   proc_entry->proc_fops = &pseudo_dev_proc_operations;
 
-  return request_irq(1, my_getchar, 0, "my keyboard driver", (void *)(my_getchar));;
+  int i = request_irq(1, &my_getchar, IRQF_SHARED, "my keyboard driver", "1234");
+  printk("<1> Request IRQ gave response %d", i);
+  return i;
 }
 
 static void __exit cleanup_routine(void) {
-
-  free_irq(1, (void *)(my_getchar));
+  free_irq(1, "1234");
   printk("<1> Dumping module\n");
   remove_proc_entry("ioctl_test", NULL);
 
@@ -122,34 +148,28 @@ static int pseudo_device_ioctl(struct inode *inode, struct file *file,
 {
   struct ioctl_test_t ioc_test;
   struct ioctl_getchar_t ioc_getchar;
-
-  my_printk("1\n");
   
   switch (cmd) {
-
-  case IOCTL_TEST:
-
-    copy_from_user(&ioc_test, (struct ioctl_test_t *)arg, 
-		   sizeof(struct ioctl_test_t));
-    printk("<1> ioctl: call to IOCTL_TEST (%d,%c)!\n", 
-	   ioc_test.field1, ioc_test.field2);
-
-    my_printk ("Got msg in kernel\n");
-    break;
-  case IOCTL_GETCHAR:
-    my_printk("2\n");
-    copy_from_user(&ioc_getchar, (struct ioctl_getchar_t *)arg, 
-		  sizeof(struct ioctl_getchar_t));
-    interruptible_sleep_on((wait_queue_head_t *) &my_queue);
-    my_printk("4\n");
-    copy_to_user(ioc_getchar.ret_addr, &my_char, 1);
-    printk("<1> ioctl: Character \"%c\" sent to address %x!\n", 
-	   (unsigned int) my_char, ioc_getchar.ret_addr);
-    my_printk ("Got msg in kernel\n");
-    break;
-  default:
-    return -EINVAL;
-    break;
+    case IOCTL_TEST:
+      copy_from_user(&ioc_test, (struct ioctl_test_t *)arg, 
+        sizeof(struct ioctl_test_t));
+      printk("<1> ioctl: call to IOCTL_TEST (%d,%c)!\n", 
+      ioc_test.field1, ioc_test.field2);
+      my_printk ("Got msg in kernel\n");
+      break;
+    case IOCTL_GETCHAR:
+      copy_from_user(&ioc_getchar, (struct ioctl_getchar_t *)arg, sizeof(struct ioctl_getchar_t));
+      interruptible_sleep_on((wait_queue_head_t *) &my_queue);
+      if(my_char != '\0') {
+        copy_to_user(ioc_getchar.ret_addr, &my_char, 1);
+        printk("<1> ioctl: Character \"%c\" sent to address %x!\n", my_char, (unsigned int) ioc_getchar.ret_addr);
+      } else {
+        printk("Skip");
+      }
+      break;
+    default:
+      return -EINVAL;
+      break;
   }
   
   return 0;

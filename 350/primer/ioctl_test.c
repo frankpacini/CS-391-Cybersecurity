@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
 #define IOCTL_TEST _IOW(0, 6, struct ioctl_test_t)
 #define IOCTL_GETCHAR _IOR(1, 7, struct ioctl_getchar_t)
@@ -28,8 +29,12 @@ int main () {
   char ch;
   ioctl_getchar.ret_addr = &ch;
 
-  ioctl (fd, IOCTL_GETCHAR, &ioctl_getchar);
-  printf("%c", ch);
+
+  while(1) {
+    ioctl (fd, IOCTL_GETCHAR, &ioctl_getchar);
+    char str[2] = {ch, '\0'};
+    write(STDOUT_FILENO, str, 2);
+  }
 
   return 0;
 }
