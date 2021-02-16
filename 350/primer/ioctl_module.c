@@ -125,8 +125,12 @@ static int __init initialization_routine(void) {
 
   proc_entry->proc_fops = &pseudo_dev_proc_operations;
 
+  disable_irq(1);
+
   int i = request_irq(1, &my_getchar, IRQF_SHARED, "my keyboard driver", "1234");
+  enable_irq(1);
   printk("<1> Request IRQ gave response %d", i);
+
   return i;
 }
 

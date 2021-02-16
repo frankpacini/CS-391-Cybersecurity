@@ -14,7 +14,7 @@ obj-m += ioctl_module.o
 all: ioctl_module ioctl_test install
 
 ioctl_module: ioctl_module.c
-	make -C /lib/modules/`uname -r`/build SUBDIRS=$(PWD) modules
+	make -C /lib/modules/`uname -r`/build SUBDIRS=/root/350/primer modules
 
 ioctl_test: ioctl_test.c
 	gcc -o ioctl_test ioctl_test.c
