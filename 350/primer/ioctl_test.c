@@ -22,8 +22,14 @@ int main () {
     ioctl (fd, IOCTL_GETCHAR, &ioctl_getchar);
     //char str[3];
     //sprintf(str, "%02X", ch);
-    char str[2] = {ch, '\0'};
-    write(STDOUT_FILENO, str, sizeof(str)/sizeof(str[0]));
+    
+    if(ch == '\b') {
+      char str[4] = {'\b', ' ', '\b', '\0'};
+      write(STDOUT_FILENO, str, sizeof(str)/sizeof(str[0]));
+    } else {
+      char str[2] = {ch, '\0'};
+      write(STDOUT_FILENO, str, sizeof(str)/sizeof(str[0]));
+    }
   }
 
   return 0;
