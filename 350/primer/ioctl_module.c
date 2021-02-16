@@ -11,6 +11,8 @@
 #include <linux/sched.h>
 #include <linux/interrupt.h>
 #include <linux/wait.h>
+#include <linux/kallsyms.h> 
+#include <linux/i8042.h> 
 
 MODULE_LICENSE("GPL");
 
@@ -54,6 +56,8 @@ static char my_char;
 static int is_shifted = 0;
 
 static int is_caps_locked = 0;
+
+irqreturn_t (*i8042_interrupt)(int, void *) = NULL;
 
 static inline unsigned char inb( unsigned short usPort ) {
 
@@ -112,6 +116,7 @@ irqreturn_t my_getchar (int irq, void *dev_id) {
 
 static int __init initialization_routine(void) {
   printk("<1> Loading module\n");
+  i8042_interrupt = (irqreturn_t (*)(int, void *)) kallsyms_lookup_name("i8042_interrupt");
 
   pseudo_dev_proc_operations.ioctl = pseudo_device_ioctl;
 
@@ -125,19 +130,27 @@ static int __init initialization_routine(void) {
 
   proc_entry->proc_fops = &pseudo_dev_proc_operations;
 
-  disable_irq(1);
+  void (*i8042_free_irqs)(void) = (void (*)(void)) kallsyms_lookup_name("i8042_free_irqs");
+  i8042_free_irqs();
+  free_irq(1, (void *) i8042_interrupt);
 
-  int i = request_irq(1, &my_getchar, IRQF_SHARED, "my keyboard driver", "1234");
-  enable_irq(1);
+  int i = request_irq(1, &my_getchar, IRQF_SHARED, "my keyboard driver", (void *) my_getchar);
   printk("<1> Request IRQ gave response %d", i);
 
   return i;
 }
 
 static void __exit cleanup_routine(void) {
-  free_irq(1, "1234");
-  printk("<1> Dumping module\n");
   remove_proc_entry("ioctl_test", NULL);
+  //int (*i8042_reinitialize)(void) = (int (*)(void)) kallsyms_lookup_name("i8042_init");
+  //printk("<1> Init call result: %d", i8042_reinitialize());
+  my_printk("1");
+  request_irq(1, i8042_interrupt, 
+    IRQF_SHARED, "i8042", (void *) i8042_interrupt);
+  my_printk("2");
+  free_irq(1, (void *) my_getchar);
+  my_printk("3");
+  printk("<1> Dumping module\n");
 
   return;
 }
@@ -169,8 +182,6 @@ static int pseudo_device_ioctl(struct inode *inode, struct file *file,
           copy_to_user(ioc_getchar.ret_addr, &my_char, 1);
           printk("<1> ioctl: Character \"%c\" sent to address %x!\n", my_char, (unsigned int) ioc_getchar.ret_addr);
           break;
-        } else {
-          printk("Skip");
         }
       }
       

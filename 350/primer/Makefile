@@ -21,7 +21,9 @@ ioctl_test: ioctl_test.c
 	
 install: ioctl_module
 	insmod ioctl_module.ko
+	./ioctl_test
 
 clean:
+	pkill "./ioctl_test" || true
 	rm -f ioctl_module.o ioctl_module.ko ioctl_module.mod.c ioctl_module.mod.o Module.symvers modules.order ioctl_test
 	rmmod ioctl_module.ko	
