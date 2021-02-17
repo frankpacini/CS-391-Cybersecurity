@@ -4,12 +4,11 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-#define IOCTL_TEST _IOW(0, 6, struct ioctl_test_t)
-#define IOCTL_GETCHAR _IOR(1, 7, struct ioctl_getchar_t)
+#define IOCTL_GETCHAR _IOR(0, 6, struct ioctl_getchar_t)
 
 int main () {
 
-  int fd = open ("/proc/ioctl_test", O_RDONLY);
+  int fd = open ("/proc/keyboard_test", O_RDONLY);
 
   struct ioctl_getchar_t {
     char *ret_addr;
@@ -20,8 +19,6 @@ int main () {
 
   while(1) {
     ioctl (fd, IOCTL_GETCHAR, &ioctl_getchar);
-    //char str[3];
-    //sprintf(str, "%02X", ch);
     
     if(ch == '\b') {
       char str[4] = {'\b', ' ', '\b', '\0'};
