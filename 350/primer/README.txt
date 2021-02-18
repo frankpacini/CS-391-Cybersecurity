@@ -5,9 +5,7 @@ Steps to build:
 1) Open two terminals to where the files are saved
 2) Enter "sleep 15; make clean" or similar command in one terminal to remove the module, end the user program, and reinsert the i8042 handler automatically
 3) Enter "make" in the other to build and insert the module and compile and run the user program
-4) Press enter if "make clean" stalls on the rmmod command 
-    (this occurs on occasion for reasons I do not understand and is sometimes necessary to terminate the user program, 
-    even though that should have already happened in the Makefile, and the i8042 handler has also clearly been restored by the clean up routine)
+4) Type another character in the user program if "make clean" stalls on the rmmod command (this occurs on occasion, I don't know why)
 
 
 Sources:

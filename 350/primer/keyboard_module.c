@@ -85,13 +85,13 @@ irqreturn_t keyboard_interrupt (int irq, void *dev_id) {
 
   my_char = '\0';
 
-  if(index == 42 || index == 54) { // left or right shift pressed
+  if(index == 0x2a || index == 0x36) { // left or right shift pressed
     is_shifted = 1; 
     //printk("<1> Shift on");
-  } else if(index == 170 || index == 182 || index == -86 || index == -74) { // left or right shift released
+  } else if(index == 0xaa || index == 0xb6 || index == 0xffffffaa || index == 0xffffffb6) { // left or right shift released
     is_shifted = 0; 
     //printk("<1> Shift off");
-  } else if(index == 58) { // Caps lock pressed
+  } else if(index == 0xba) { // Caps lock pressed
     is_caps_locked = ~is_caps_locked;
   } else if(//(inb( 0x64 ) & 0x1) && 
       !(index & 0x80)) {
