@@ -140,9 +140,9 @@ print:	pushw %dx
 	shrb $4, %al
 	cmpb $10, %al
 	jge 1f
-	addb $0x30, %al
+	addb $0x30, %al		# Add ASCII '0' offset
 	jmp 2f
-1:	addb $55, %al		
+1:	addb $55, %al		# Add ASCII 'A'-10 offset
 2:	movb $0x0E, %ah
 	movw $0x07, %bx
 	int $0x10                   # BIOS interrupt with AH=0x0E for teletype output of char in %ax with 
