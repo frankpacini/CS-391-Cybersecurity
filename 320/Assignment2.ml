@@ -1,9 +1,9 @@
 (*
 Honor code comes here:
 
-First Name:
-Last Name:
-BU ID:
+First Name: Francis 
+Last Name: Pacini
+BU ID: U01490529
 
 I pledge that this program represents my own
 program code and that I have coded on my own. I received
@@ -148,7 +148,7 @@ let nines i =
       else aux (i-1) (9::acc)
    in aux i []
 
-let rec sum (a : int list) (b : int list) (carry : int) : int list = 
+let rec sum (a : int list) (b : int list) : int list = 
    let rec aux a b carry acc = 
       match a, b with
       | [], [] -> 
@@ -157,16 +157,7 @@ let rec sum (a : int list) (b : int list) (carry : int) : int list =
       | [], h::t -> aux [] t ((h + carry) / 10) (((h + carry) mod 10)::acc)
       | h::t, [] -> aux t [] ((h + carry) / 10) (((h + carry) mod 10)::acc)
       | h1::t1, h2::t2 -> aux t1 t2 ((h1 + h2 + carry) / 10) (((h1 + h2 + carry) mod 10)::acc)
-   in aux a b carry []   
-
-
-   (* let a = sum [4; 3; 2; 1] [1;0;1] 0;;
-   let a = sum [1] [9;9;9] 0 ;;
-   let a = sum [] [] 0;;
-   let a = tetra 27;;
-   let a = tetra 28;;
-   let a = sum (extract (toDec (tetra 27))) (extract (toDec (tetra 28))) 0;;
-   let a = sum (nines 1000000) [1] 0;; *)
+   in aux a b 0 []   
 
 
 (*
@@ -184,9 +175,9 @@ pell2.
 
 let rec pell2 (i: int) : int list = 
    let rec aux i p1 p2 = 
-      if i = 0 then [0]
+      if i = 0 then []
       else if i = 1 then p2
-      else aux (i-1) p2 (sum (sum p2 p2 0) p1 0)
+      else aux (i-1) p2 (sum (sum p2 p2) p1)
     in aux i [0] [1]
    
-   let a = pell2 50;;
+   let a = pell2 0;;

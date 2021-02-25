@@ -65,7 +65,8 @@ def find_solution(N, k, intervals):
     i = N - 1
     j = N - 1
     while(i >= 0):                              # Iterate through the start array from N - 1 to 0
-        while(j >= 0 and intervals[j][2] > intervals_by_start[i][1]): # Decrement down to the highest finish time interval which is compatible with interval i. Any interval in the finish array not compatible with i can't be compatible with those in 0 to i-1 of the start array.
+        while(j >= 0 and intervals[j][2] > intervals_by_start[i][1]): # Decrement down to the highest finish time interval which is compatible with interval i. 
+            # Any interval in the finish array not compatible with i can't be compatible with those in 0 to i-1 of the start array.
             j -= 1
         prev = 0        # If all intervals have been considered, there is no earlier compatible job, so assign to 0 (which means none)
         if j >= 0:
