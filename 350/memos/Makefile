@@ -4,7 +4,8 @@ build:
 	as --32 memos-1.s -o memos-1.o
 	ld -T memos.ld memos-1.o -o memos-1
 	dd bs=1 if=memos-1 of=memos-1_test skip=4096 count=512
-	# qemu-system-i386 -hda memos-1_test | /root/vnc/opt/TigerVNC/bin/vncviewer localhost:5900 
+	qemu-system-i386 -hda memos-1_test 
+	# | /root/vnc/opt/TigerVNC/bin/vncviewer localhost:5900 
 
 clean:
 	rm -f memos-1.o memos-1 memos-1_test
