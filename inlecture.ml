@@ -1,0 +1,1 @@
+let length l = List.fold_right (fun _ y -> 1 + y) l 0 
