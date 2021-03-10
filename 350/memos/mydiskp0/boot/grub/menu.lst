@@ -1,3 +1,0 @@
-title Puppy Linux 528 full install in sda1
-root (hd0,0)
-kernel /boot/vmlinuz root=/dev/sda1 pmedia=atahd

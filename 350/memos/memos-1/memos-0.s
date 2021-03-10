@@ -17,7 +17,8 @@ _start:
     lodsb               # Load a byte from DS:SI to AL & increment SI
     movb $0x0E, %ah     # Write character to the screen
     int $0x10           # Make BIOS interrupt call to vector 0x10
-    loop 1b             # Decrement CX, check for zero
+    sub $8, %cx
+    jg 1b
 
 
 # Write "0x" to the screen
